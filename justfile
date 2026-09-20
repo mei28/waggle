@@ -11,14 +11,24 @@ help:
 # Environment
 # ============================================================
 
-# Install the uv environment, create .env from the example, and fill in the Kaggle username
+# Install the uv environment, create .env from the example, fill in the Kaggle username, and write the plugin token
 setup:
   @echo "Setting up the environment..."
   uv sync
   [ -f .env ] || cp .env.example .env
-  u=$(python3 -c 'import json,os;print(json.load(open(os.path.expanduser("~/.kaggle/kaggle.json")))["username"])'); \
+  u="$(uv run kaggle config view | awk '/username/ {print $NF}')"; \
+    [ -n "$u" ] || { echo "Kaggle CLI is not logged in (run: kaggle auth login)"; exit 1; }; \
     sed -i "s/^KAGGLE_USERNAME=.*/KAGGLE_USERNAME=$u/" .env
+  just kaggle-token
   @echo "Done. Edit COMP and SUBMIT_MODE in .env."
+
+# Copy the current Kaggle OAuth access token into .env for the nvidia-kaggle plugin (valid a few hours; rerun on 401)
+kaggle-token:
+  @echo "Refreshing KAGGLE_API_TOKEN in .env..."
+  @t="$(uv run kaggle auth print-access-token)"; \
+    [ -n "$t" ] || { echo "no access token; run: kaggle auth login"; exit 1; }; \
+    if grep -q '^KAGGLE_API_TOKEN=' .env; then sed -i "s|^KAGGLE_API_TOKEN=.*|KAGGLE_API_TOKEN=$t|" .env; else echo "KAGGLE_API_TOKEN=$t" >> .env; fi
+  @echo "KAGGLE_API_TOKEN written to .env"
 
 # Create the Issue labels used by the kaggle skills (idempotent)
 labels:
