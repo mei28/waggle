@@ -4,9 +4,10 @@ input/*
 output/*
 !output/.gitkeep
 
-# local secrets and scratch
+# local secrets, scratch, and research caches (nvidia-kaggle writes data/*.db)
 .env
 .tmp/
+data/
 
 # python
 .venv/
