@@ -1,9 +1,12 @@
 """Render docs/experiments.md from every output/<exp>/<run>/metrics.json plus LB scores from docs/submissions.md.
 
-Usage: uv run python tools/exp_table.py
+Usage: uv run python -m tools.exp_table [--include-debug]
 """
 
+from dataclasses import dataclass
 from pathlib import Path
+
+import tyro
 
 from kgl.io import Metrics, read_metrics
 
@@ -51,14 +54,19 @@ def render(metrics: list[Metrics], submissions: list[dict[str, str]], include_de
     return "\n".join(lines) + "\n"
 
 
-def main() -> None:
+@dataclass
+class Args:
+    include_debug: bool = False
+
+
+def main(args: Args) -> None:
     root = Path(__file__).resolve().parents[1]
     submissions_md = root / "docs" / "submissions.md"
     submissions = parse_submissions(submissions_md.read_text()) if submissions_md.exists() else []
     out = root / "docs" / "experiments.md"
-    out.write_text(render(load_metrics(root / "output"), submissions))
+    out.write_text(render(load_metrics(root / "output"), submissions, include_debug=args.include_debug))
     print(out)
 
 
 if __name__ == "__main__":
-    main()
+    main(tyro.cli(Args))

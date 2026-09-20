@@ -2,7 +2,17 @@
 
 import tyro
 
-from tools import check_submission, issue_comment, kernel_push, make_folds, new_exp, submit, upload_codes, upload_model
+from tools import (
+    check_submission,
+    exp_table,
+    issue_comment,
+    kernel_push,
+    make_folds,
+    new_exp,
+    submit,
+    upload_codes,
+    upload_model,
+)
 
 
 def test_new_exp_takes_name_positionally():
@@ -33,3 +43,7 @@ def test_upload_and_kernel_tools_take_exp_positionally():
 
 def test_check_submission_has_no_positional_args():
     assert tyro.cli(check_submission.Args, args=["--interval", "5"]).interval == 5.0
+
+
+def test_exp_table_parses_include_debug_and_help_does_not_run_main():
+    assert tyro.cli(exp_table.Args, args=["--include-debug"]).include_debug is True
