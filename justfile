@@ -42,12 +42,12 @@ download comp:
 # Build a versioned fold file: just folds skf5_seed42 --strategy StratifiedKFold --target Survived --id-col PassengerId
 folds name *args:
   @echo "Building folds/{{name}}.parquet..."
-  uv run python tools/make_folds.py {{name}} {{args}}
+  uv run python -m tools.make_folds {{name}} {{args}}
 
 # Create experiments/<name>/ from a base experiment: just new-exp exp001_more_trees exp000_baseline
 new-exp name from="exp000_baseline":
   @echo "Creating {{name}} from {{from}}..."
-  uv run python tools/new_exp.py {{name}} --base {{from}}
+  uv run python -m tools.new_exp {{name}} --base {{from}}
 
 # Train an experiment; extra args override Config fields: just run exp000_baseline --debug
 run exp *args:
@@ -62,12 +62,12 @@ infer exp *args:
 # Regenerate docs/experiments.md from output/*/*/metrics.json
 exp-table:
   @echo "Rendering docs/experiments.md..."
-  uv run python tools/exp_table.py
+  uv run python -m tools.exp_table
 
 # Post an experiment's result to its idea Issue: just record exp000_baseline 12 [--run <run>] [--lb 0.78]
 record exp issue *args:
   @echo "Commenting on #{{issue}}..."
-  uv run python tools/issue_comment.py {{exp}} {{issue}} {{args}}
+  uv run python -m tools.issue_comment {{exp}} {{issue}} {{args}}
 
 # ============================================================
 # Submission
@@ -76,12 +76,12 @@ record exp issue *args:
 # Validate the submission and print the submit command; add --now to submit and record the LB
 submit exp msg *flags:
   @echo "Checking submission for {{exp}}..."
-  uv run python tools/submit.py {{exp}} "{{msg}}" {{flags}}
+  uv run python -m tools.submit {{exp}} "{{msg}}" {{flags}}
 
 # Wait for the latest submission to be scored and print the public LB
 check-submission *args:
   @echo "Waiting for the latest submission..."
-  uv run python tools/check_submission.py {{args}}
+  uv run python -m tools.check_submission {{args}}
 
 # ============================================================
 # Code competitions (codes Dataset + model Dataset + thin notebook kernel)
@@ -90,17 +90,17 @@ check-submission *args:
 # Upload src/kgl, experiments/<exp>, and pyproject.toml as the <comp>-codes Dataset and wait until ready
 upload-codes exp *args:
   @echo "Uploading codes for {{exp}}..."
-  uv run python tools/upload_codes.py {{exp}} {{args}}
+  uv run python -m tools.upload_codes {{exp}} {{args}}
 
 # Upload one run's model/, config.json, and metrics.json as the <comp>-<exp>-model Dataset
 upload-model exp *args:
   @echo "Uploading model for {{exp}}..."
-  uv run python tools/upload_model.py {{exp}} {{args}}
+  uv run python -m tools.upload_model {{exp}} {{args}}
 
 # Render sub/sub.py from the marimo template, export to ipynb, write kernel-metadata.json, and push the kernel
 push-kernel exp *args:
   @echo "Pushing the submission kernel for {{exp}}..."
-  uv run python tools/kernel_push.py {{exp}} {{args}}
+  uv run python -m tools.kernel_push {{exp}} {{args}}
 
 # Show the status of the submission kernel's latest run
 kernel-status:

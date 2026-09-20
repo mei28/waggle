@@ -75,3 +75,9 @@ def test_append_submission_creates_header_once(tmp_path):
     text = path.read_text()
     assert text.count("| date | exp | run | cv | public_lb | message | kernel_version | file |") == 1
     assert text.rstrip().splitlines()[-2:] == ["| a | b | c | d | e | f | g | h |", "| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |"]
+
+
+def test_shell_line_quotes_arguments_with_spaces():
+    cmd = submit.final_command("csv", "titanic", file="out/submission.csv", message="exp000/default cv=0.69 baseline")
+    line = submit.shell_line(cmd)
+    assert line == "kaggle competitions submit -c titanic -f out/submission.csv -m 'exp000/default cv=0.69 baseline'"

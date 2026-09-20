@@ -6,6 +6,7 @@ Reads comp, sample file, and id column from the run's metrics.json (the resolved
 
 import datetime as dt
 import os
+import shlex
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -35,6 +36,11 @@ def final_command(
             raise ValueError("code competitions need the kernel slug and the kernel version to submit")
         return [*base, "-k", kernel, "-v", str(version), "-f", file, "-m", message]
     raise ValueError(f"SUBMIT_MODE must be csv or code, got {mode!r}")
+
+
+def shell_line(cmd: list[str]) -> str:
+    """The command as one line the user can paste into a shell."""
+    return shlex.join(cmd)
 
 
 def submission_file(root: Path, exp: str, run: str) -> Path:
@@ -84,7 +90,9 @@ def main(args: Args) -> None:
         args.mode, cfg["comp"], file=str(file), message=message, kernel=args.kernel, version=args.version
     )
     if not args.now:
-        print("to submit, run:\n  " + " ".join(cmd) + f'\nor: just submit {args.exp} "{args.message}" --now')
+        print(
+            "to submit, run:\n  " + shell_line(cmd) + f"\nor: just submit {args.exp} {shlex.quote(args.message)} --now"
+        )
         return
 
     limits = subprocess.run(
