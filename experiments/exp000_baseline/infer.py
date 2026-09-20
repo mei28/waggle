@@ -38,7 +38,11 @@ def main(args: InferConfig) -> None:
     test = load_test(env, cfg)
     pred = postprocess(predict(models, build_features(test, cfg)))
     sample = pl.read_csv(comp_dir(env, cfg.comp) / cfg.sample_sub)
-    sub = sample.with_columns(pl.Series(cfg.target, pred, dtype=sample[cfg.target].dtype))
+    # Join by id rather than inserting by position, so a test/sample row-order difference cannot pass unnoticed.
+    predictions = pl.DataFrame({cfg.id_col: test[cfg.id_col], cfg.target: pred}).cast(
+        {cfg.target: sample[cfg.target].dtype}
+    )
+    sub = sample.select(cfg.id_col).join(predictions, on=cfg.id_col, how="left")
     validate_submission(sub, sample, cfg.id_col)
 
     out_dir = env.output_dir if env.kind == "kaggle" else run_root

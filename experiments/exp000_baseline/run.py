@@ -101,9 +101,11 @@ def load_test(env: Env, cfg: Config) -> pl.DataFrame:
 # --- model --------------------------------------------------------------------------------------
 
 
-def fit_fold(X_tr: np.ndarray, y_tr: np.ndarray, X_va: np.ndarray, y_va: np.ndarray, cfg: Config) -> lgb.Booster:
+def fit_fold(X_tr: np.ndarray, y_tr: np.ndarray, cfg: Config) -> lgb.Booster:
+    """The validation fold is not passed to fit: with a fixed tree count it would only shape the model
+    if early stopping were enabled, and that would make the CV optimistic."""
     model = build(cfg.model, **asdict(cfg.model_params), random_state=cfg.seed, verbose=-1)
-    model.fit(X_tr, y_tr, eval_set=[(X_va, y_va)])
+    model.fit(X_tr, y_tr)
     return model.booster_
 
 
@@ -150,7 +152,7 @@ def main(cfg: Config) -> None:
     for k in run_folds:
         tr, va = cv.split(folds, k, time=is_time)
         with trace(f"fold {k}"):
-            booster = fit_fold(X[tr], y[tr], X[va], y[va], cfg)
+            booster = fit_fold(X[tr], y[tr], cfg)
         booster.save_model(str(out / "model" / f"fold{k}.txt"))
         oof[va] = booster.predict(X[va])
         score = score_folds(y[va], postprocess(oof[va]), np.zeros(len(va)), cfg.metric)[0]
