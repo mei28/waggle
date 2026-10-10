@@ -37,6 +37,7 @@ labels:
   gh label create cv --color 5319e7 --description "Validation design" --force
   gh label create data --color 0e8a16 --description "Data finding or issue" --force
   gh label create bug --color d73a4a --description "Something is broken" --force
+  gh label create log --color c5def5 --description "Running diary; notes move to Issues or docs when they grow" --force
 
 # Download competition data into input/<comp>
 download comp:
@@ -92,6 +93,18 @@ submit exp msg *flags:
 check-submission *args:
   @echo "Waiting for the latest submission..."
   uv run python -m tools.check_submission {{args}}
+
+# ============================================================
+# Records (diary, tracking Issues, explainers; the kaggle-journal skill)
+# ============================================================
+
+# Scatter of CV against the public LB per submission, colored by order (docs/figures/cv_lb.png)
+cv-lb-plot:
+  uv run python -m tools.cv_lb_plot
+
+# Render an explainer page (docs/explainers/*.html) to a PNG next to it, for pasting into Issues
+explainer html:
+  docs/explainers/render.sh {{html}}
 
 # ============================================================
 # Code competitions (codes Dataset + model Dataset + thin notebook kernel)

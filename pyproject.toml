@@ -24,6 +24,7 @@ dev = [
     "marimo",
     "nbformat",
     "kaggle",
+    "matplotlib>=3.11.2",
 ]
 dl = [
     "torch",
