@@ -2,8 +2,8 @@
 
 Rules for agents working in a competition repository created from
 [waggle](https://github.com/mei28/waggle). The `kaggle-*` skills in
-`~/.claude/skills` hold the procedures (onboard, validation, experiment, submit, retro); this file
-holds what is always true here.
+`~/.claude/skills` hold the procedures (onboard, validation, experiment, submit, journal, research,
+retro); this file holds what is always true here.
 
 ## Layout
 
@@ -15,7 +15,8 @@ holds what is always true here.
 | `experiments/expNNN_change/` | One experiment: `run.py` (train, OOF, metrics.json) and `infer.py` (submission) |
 | `output/<exp>/<run>/` | Run artifacts: `metrics.json`, `config.json`, `oof.parquet`, `model/`, `run.log`, `submission.csv` |
 | `notebooks/` | marimo `.py` notebooks (EDA); `.ipynb` files are export products |
-| `docs/` | `competition.md`, `validation.md`, `experiments.md` (generated), `submissions.md`, `eda.md`, `retro.md` |
+| `docs/` | `competition.md`, `validation.md`, `experiments.md` (generated), `submissions.md`, `eda.md`, `retro.md`, `roadmap.md` (proposed order, decisions pending), `glossary.md`, `discussions.md` and `notebooks.md` (forum and public-kernel digests by topic) |
+| `docs/explainers/`, `docs/figures/` | Picture explainers (HTML and the PNG `just explainer` renders) and generated figures (`just cv-lb-plot`) |
 | `tools/` | Thin CLIs behind the justfile |
 
 ## Commands
@@ -55,6 +56,27 @@ hyperparameter because "CV went down" is not enough.
   CV vs LB table in `docs/validation.md`.
 - One idea = one Issue (labels `idea`, `cv`, `data`, `bug`). Experiments are comments. Closing an Issue
   is the decision, and the user closes it.
+- Three tracking Issues run for the whole competition: the diary (label `log`, pinned), the glossary
+  (pinned), and CV vs LB. The `kaggle-journal` skill keeps them current in a wrap-up: after an LB is
+  recorded, while a long run is going, after a research check, and at the end of work. It asks once
+  with the list of what it will touch, then goes through to the push.
+
+## Language and audience
+
+Defaults for this repository; edit this section to change them. The skills write by it.
+
+| Where | Language |
+|---|---|
+| Issue bodies and hand-written Issue comments | English, then `## 日本語訳` mirroring each heading |
+| `just record` comments | English only |
+| Diary comments | Japanese only |
+| `docs/*.md` | Japanese prose under the template's headings |
+| Explainers | ELI18: terms of art, formulas, CV numbers, and the limits of the approximation; Japanese with English sub-labels; pictures over text |
+
+- Gloss a project abbreviation the first time it appears in a reply, and add new terms to
+  `docs/glossary.md`.
+- Before asking the user to decide on or close Issues, say what each one is: the problem in plain
+  words, what was done, and the result with numbers.
 
 ## Code rules
 
