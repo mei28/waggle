@@ -12,5 +12,14 @@
         ]
       }
     ]
+  },
+  "skillOverrides": {
+    "kaggle-onboard": "on",
+    "kaggle-validation": "on",
+    "kaggle-experiment": "on",
+    "kaggle-submit": "on",
+    "kaggle-journal": "on",
+    "kaggle-research": "on",
+    "kaggle-retro": "on"
   }
 }
